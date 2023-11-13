@@ -4,3 +4,37 @@
 
 soong_namespace {
 }
+
+android_app_import {
+	name: "MiuiCamera",
+	owner: "xiaomi",
+	apk: "proprietary/system/priv-app/MiuiCamera/MiuiCamera.apk",
+	overrides: ["Aperture", "Camera2"],
+	certificate: "platform",
+	dex_preopt: {
+		enabled: false,
+	},
+	privileged: true,
+}
+
+android_app_import {
+	name: "MiuiExtraPhoto",
+	owner: "xiaomi",
+	apk: "proprietary/system/priv-app/MiuiExtraPhoto/MiuiExtraPhoto.apk",
+	certificate: "platform",
+	dex_preopt: {
+		enabled: false,
+	},
+	privileged: true,
+}
+
+android_app_import {
+	name: "MiuiScanner",
+	owner: "xiaomi",
+	apk: "proprietary/system/priv-app/MiuiScanner/MiuiScanner.apk",
+	certificate: "platform",
+	dex_preopt: {
+		enabled: false,
+	},
+	privileged: true,
+}
