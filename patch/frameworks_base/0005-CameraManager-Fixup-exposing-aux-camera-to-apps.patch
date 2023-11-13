@@ -1,0 +1,44 @@
+From 752b98047258ea390598f08dcde9ba489563f450 Mon Sep 17 00:00:00 2001
+From: Ido Ben-Hur <idoybh2@gmail.com>
+Date: Thu, 12 Nov 2020 18:05:38 +0200
+Subject: [PATCH 5/6] CameraManager: Fixup exposing aux camera to apps
+
+Since when are we doing stuff like this?
+Save some runtime, even if a bit. Also look cleaner.
+eb6ebc0c30d1ad582189c2d08d9f683ce18d8e64
+
+Change-Id: Ic8c5844321a7310c2b72e1d7c2eceb5e3e8285e2
+Signed-off-by: Pranav Vashi <neobuddy89@gmail.com>
+---
+ core/java/android/hardware/camera2/CameraManager.java | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/core/java/android/hardware/camera2/CameraManager.java b/core/java/android/hardware/camera2/CameraManager.java
+index 3e5fee84b7be..451d6962c945 100644
+--- a/core/java/android/hardware/camera2/CameraManager.java
++++ b/core/java/android/hardware/camera2/CameraManager.java
+@@ -1752,9 +1752,9 @@ public final class CameraManager {
+         private String[] extractCameraIdListLocked() {
+             String[] cameraIds = null;
+             boolean exposeAuxCamera = Camera.shouldExposeAuxCamera();
++            int size = exposeAuxCamera ? mDeviceStatus.size() : 2;
+             int idCount = 0;
+-            for (int i = 0; i < mDeviceStatus.size(); i++) {
+-                if (!exposeAuxCamera && i == 2) break;
++            for (int i = 0; i < size; i++) {
+                 int status = mDeviceStatus.valueAt(i);
+                 if (status == ICameraServiceListener.STATUS_NOT_PRESENT
+                         || status == ICameraServiceListener.STATUS_ENUMERATING) continue;
+@@ -1762,8 +1762,7 @@ public final class CameraManager {
+             }
+             cameraIds = new String[idCount];
+             idCount = 0;
+-            for (int i = 0; i < mDeviceStatus.size(); i++) {
+-                if (!exposeAuxCamera && i == 2) break;
++            for (int i = 0; i < size; i++) {
+                 int status = mDeviceStatus.valueAt(i);
+                 if (status == ICameraServiceListener.STATUS_NOT_PRESENT
+                         || status == ICameraServiceListener.STATUS_ENUMERATING) continue;
+-- 
+2.34.1
+

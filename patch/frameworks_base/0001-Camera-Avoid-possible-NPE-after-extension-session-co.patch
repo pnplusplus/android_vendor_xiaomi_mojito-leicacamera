@@ -1,0 +1,48 @@
+From 538166a0d45fb0224f8f7ef9b286e633ba28de43 Mon Sep 17 00:00:00 2001
+From: Emilian Peev <epeev@google.com>
+Date: Thu, 9 Feb 2023 15:22:17 -0800
+Subject: [PATCH 1/6] Camera: Avoid possible NPE after extension session
+ configuration
+
+Camera extension clients are able to close and release camera and
+all associated extension resources while an advanced extension session
+configuration is in progress.
+In case, the extension initializer callback gets executed after all
+resources are released it may try to access the already released
+binder interface triggering NPE.
+
+Bug: 268437036
+Test: atest -c -d
+cts/tests/camera/src/android/hardware/camera2/cts/CameraExtensionSessionTest.java
+
+Change-Id: Ib6fdc9d08e973616dc7d83264dc3f320e496cbd3
+Signed-off-by: Pranav Vashi <neobuddy89@gmail.com>
+---
+ .../impl/CameraAdvancedExtensionSessionImpl.java      | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/core/java/android/hardware/camera2/impl/CameraAdvancedExtensionSessionImpl.java b/core/java/android/hardware/camera2/impl/CameraAdvancedExtensionSessionImpl.java
+index 77def20179ae..0536148c3d76 100644
+--- a/core/java/android/hardware/camera2/impl/CameraAdvancedExtensionSessionImpl.java
++++ b/core/java/android/hardware/camera2/impl/CameraAdvancedExtensionSessionImpl.java
+@@ -531,8 +531,15 @@ public final class CameraAdvancedExtensionSessionImpl extends CameraExtensionSes
+             boolean status = true;
+             synchronized (mInterfaceLock) {
+                 try {
+-                    mSessionProcessor.onCaptureSessionStart(mRequestProcessor);
+-                    mInitialized = true;
++                    if (mSessionProcessor != null) {
++                        mSessionProcessor.onCaptureSessionStart(mRequestProcessor);
++                        mInitialized = true;
++                    } else {
++                        Log.v(TAG, "Failed to start capture session session released before " +
++                                "extension start!");
++                        status = false;
++                        mCaptureSession.close();
++                    }
+                 } catch (RemoteException e) {
+                     Log.e(TAG, "Failed to start capture session,"
+                             + " extension service does not respond!");
+-- 
+2.34.1
+
