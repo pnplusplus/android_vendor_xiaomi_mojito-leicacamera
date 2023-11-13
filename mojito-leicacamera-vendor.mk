@@ -113,3 +113,15 @@ PRODUCT_PACKAGES += \
     MiuiCamera \
     MiuiExtraPhoto \
     MiuiScanner
+
+PRODUCT_SYSTEM_PROPERTIES += \
+    persist.vendor.camera.enableAdvanceFeatures=0x3E7 \
+    persist.vendor.camera.multicam=TRUE \
+    persist.vendor.camera.multicam.fpsmatch=TRUE \
+    persist.vendor.camera.multicam.framesync=1 \
+    persist.vendor.camera.multicam.hwsync=TRUE \
+    persist.vendor.camera.privapp.list=com.android.camera \
+    persist.vendor.camera.picturesize.limit.enable=false \
+    persist.sys.miui.sdk.dbg \
+    ro.boot.camera.config=_pro \
+    ro.com.google.lens.oem_camera_package=com.android.camera
